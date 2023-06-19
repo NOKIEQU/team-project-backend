@@ -1,5 +1,5 @@
 const { db } = require('./db')
-const { hash } = require('./hash')
+const { hashToken } = require('./hash')
 
 // used when we create a refresh token.
 function addRefreshTokenToWhitelist({ jti, refreshToken, userId }) {
@@ -11,6 +11,8 @@ function addRefreshTokenToWhitelist({ jti, refreshToken, userId }) {
       },
     });
   }
+  
+
   
   // used to check if the token sent by the client is in the database.
   function findRefreshTokenById(id) {

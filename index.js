@@ -3,9 +3,15 @@ const prisma = new PrismaClient()
 const express = require('express')
 const bodyParser = require('body-parser')
 const {v4: uuidv4} = require('uuid')
-const jwt = require('./utils/jwt')
-const addRefreshTokenToWhitelist = require('./utils/auth')
+const jwt = require("jsonwebtoken")
+const bcrypt = require('bcrypt')
+
+const { generateTokens } = require("./utils/jwt")
+const { addRefreshTokenToWhitelist } = require('./utils/auth')
 const { GetUserByEmail } = require('./routes/getUsers')
+const { createUser } = require("./routes/createUser")
+const { getUserByID } = require("./routes/getUsers")
+const { isAuthenticated } = require('./utils/middlewares')
 
 const app = express()
 
@@ -36,6 +42,10 @@ app.get('/getusers', async (req, res) => {
     }
 })
 
+app.get('/profile', isAuthenticated, async (req, res) => {
+    res.status(200).json({message: "Successfull"})
+})
+
 app.post('/register', async (req, res) => {
 
     try {
@@ -44,8 +54,9 @@ app.post('/register', async (req, res) => {
 
         let emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
 
-        if (!email.match(emailRegex)) {
+        if (!emailRegex.test(email)) {
             res.status(400).json({message: "Invalid Email"})
+            return
         }
 
         const checkUser = !!await prisma.user.findFirst({
@@ -85,13 +96,8 @@ app.post('/register', async (req, res) => {
             return
         }
 
-        const newUser = await prisma.user.create({
-            data: {
-                username,
-                email,
-                password
-            }
-        })
+        const newUser = await createUser({username, email, password})
+
         const jti = uuidv4();
         const { accessToken, refreshToken } = generateTokens(newUser, jti)
         await addRefreshTokenToWhitelist({ jti, refreshToken, userId: newUser.id })
@@ -109,21 +115,24 @@ app.post('/login', async (req, res) => {
     try {
         
         const { email, password } = req.body
-        const existingUser = await GetUserByEmail(email);
-        const validPassword = await bcrypt.compare(password, existingUser.password);
 
         if (!email || !password) {
             res.status(400).json({message: "You must provide login credentials"});
+            return
         }
 
+        const existingUser = await GetUserByEmail(email);
 
         if (!existingUser) {
-            res.status(403).json({message: "Invalid login credentials"})
+            res.status(403).json({message: "Invalid login credentialsss"})
+            return
         }
 
+        const validPassword = await bcrypt.compare(password, existingUser.password);
 
         if (!validPassword) {
             res.status(403).json({message: "Invalid login credentials"})
+            return
         }
 
         const jti = uuidv4();
@@ -142,27 +151,23 @@ app.post('/refreshToken', async (req, res, next) => {
     try {
       const { refreshToken } = req.body;
       if (!refreshToken) {
-        res.status(400);
-        throw new Error('Missing refresh token.');
+        res.status(400).json({message: 'Missing refresh token.'});
       }
       const payload = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
       const savedRefreshToken = await findRefreshTokenById(payload.jti);
   
       if (!savedRefreshToken || savedRefreshToken.revoked === true) {
-        res.status(401);
-        throw new Error('Unauthorized');
+        res.status(401).json({message: "Unauthorized"})
       }
   
       const hashedToken = hashToken(refreshToken);
       if (hashedToken !== savedRefreshToken.hashedToken) {
-        res.status(401);
-        throw new Error('Unauthorized');
+        res.status(401).json({message: "Unauthorized"})
       }
   
       const user = await findUserById(payload.userId);
       if (!user) {
-        res.status(401);
-        throw new Error('Unauthorized');
+        res.status(401).json({message: "Unauthorized"})
       }
   
       await deleteRefreshToken(savedRefreshToken.id);

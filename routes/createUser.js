@@ -7,3 +7,5 @@ function createUser(user) {
         data: user,
     })
 }
+
+module.exports = { createUser }
