@@ -1,28 +1,32 @@
 const bcrypt = require('bcrypt')
 const { db } = require('../utils/db')
 
-function getUserByID (id) {
+async function getUserByID (id) {
     return db.user.findUnique({
         where: {
-          id,
+          id
         },
+        
       })
 }
 
-function GetUserByEmail (email) {
+async function GetUserByEmail (email) {
     return db.user.findUnique({
         where: {
-            email,
+            email
         },
+        
       })
 }
 
-function getAllUsers () {
+async function getAllUsers () {
     return db.user.findMany()
 }
+
+
 
 module.exports = {
     getAllUsers,
     getUserByID,
-    GetUserByEmail
+    GetUserByEmail,
 }
