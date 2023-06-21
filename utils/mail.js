@@ -4,7 +4,6 @@ const { db } = require('../utils/db')
 async function sendMail (email) {
     //create an unique code in database
     const code = Math.floor(100000 + Math.random() * 900000)
-
     function addMinutes(date, minutes) {
         const dateCopy = new Date(date);
         dateCopy.setMinutes(date.getMinutes() + minutes);
@@ -13,8 +12,13 @@ async function sendMail (email) {
       }
       
       const date = new Date();
-      
       const expires = addMinutes(date, 15);
+
+      const currentDate = new Date()
+
+      if (currentDate > expires) {
+        
+      }
 
     const verification = await db.verification.create({
         data: {
@@ -52,6 +56,12 @@ async function verifyEmailCode ({email, code}) {
     }
    })
    
+   await db.verification.deleteMany({
+        where: { 
+            email: email 
+        },
+    })
+
    return true
 
 }
