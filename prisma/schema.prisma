@@ -13,10 +13,11 @@ datasource db {
 enum Role {
   USER
   ADMIN
+  PREMIUM
 }
 
 model User {
-  id             String       @id @default(uuid())
+  id             String       @id @unique @default(uuid())
   username       String       @unique @db.Char(20)
   email          String       @unique
   password       String       
@@ -26,6 +27,7 @@ model User {
   activated      Boolean      @default(false)
   role           Role         @default(USER)
   refreshTokens  RefreshToken[]
+  verification   Verification[]
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
 }
@@ -38,4 +40,12 @@ model RefreshToken {
   revoked     Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model Verification {
+  id          String   @id @unique @default(uuid())
+  email       String
+  User        User     @relation(fields: [email], references: [email], onDelete: Cascade)
+  code        Int
+  expires     DateTime 
 }

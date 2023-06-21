@@ -14,14 +14,12 @@ async function isAuthenticated(req, res, next) {
       const payload = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
       req.payload = payload;
 
-      const userId = req.payload.userId 
+      const userId = req.payload.data.id 
       console.log(userId)
       
       const banned = await isBanned(userId)
 
       if (banned) {
-        console.log("middleware banned")
-        console.log(banned)
         res.status(401).json({message: "You are banned"})
         return
       }
@@ -29,7 +27,6 @@ async function isAuthenticated(req, res, next) {
       const activated = await isActivated(userId)
 
       if (!activated) {
-        console.log("middleware act")
         console.log(activated)
         res.status(401).json({message: "Your account is not activated"})
         return
