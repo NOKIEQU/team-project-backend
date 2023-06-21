@@ -58,7 +58,7 @@ app.get('/admin', isAdmin, async (req, res) => {
   res.status(200).json({message: "Hello Admin"})
 })
 
-app.post('/activate', async (req, res) => {
+app.post('/activate', isAdmin, async (req, res) => {
 
   const { id } = req.body
 
@@ -81,6 +81,8 @@ app.post('/activate', async (req, res) => {
   }
 
 })
+
+
 
 app.listen(port, () =>
   console.log(`

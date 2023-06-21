@@ -57,12 +57,13 @@ async function isAuthenticated(req, res, next) {
       const payload = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
       req.payload = payload;
 
-      const userId = req.payload.userId 
-
+      const userId = req.payload.data.id 
+      console.log(userId)
       const admin = await checkAdmin(userId)
 
       if (!admin) {
         res.status(403).json({message: "You are not an admin"})
+        return
       }
 
       

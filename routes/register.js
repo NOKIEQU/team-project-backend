@@ -67,7 +67,7 @@ router.post('/', async (req, res) => {
         await addRefreshTokenToWhitelist({ jti, refreshToken, userId: newUser.id })
         await sendMail(newUser.email)
 
-        res.status(200).json({message: "User created successfully!", token: accessToken, refresh: refreshToken})
+        res.status(200).json({message: "User created successfully", token: accessToken, refresh: refreshToken})
 
     } catch (err) {
         console.log(err)

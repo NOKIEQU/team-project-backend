@@ -3,7 +3,7 @@ const router = express.Router()
 const { verifyEmailCode } = require('../utils/mail')
 
 
-router.post('/', async (req, res) => {
+router.get('/', async (req, res) => {
     const { code, email } = req.query
 
     if (!code || !email) {
@@ -16,6 +16,7 @@ router.post('/', async (req, res) => {
 
         if (!isRequestValid) {
             res.status(400).json({message: "Provided values are incorrect"})
+            return
         }
 
         // Since is valid we can delete the code

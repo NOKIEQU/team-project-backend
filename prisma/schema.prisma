@@ -49,3 +49,7 @@ model Verification {
   code        Int
   expires     DateTime 
 }
+
+// Create Product Model - I guess im gonna create the premium plan 
+
+// Create Transaction Model - store info from the payment

@@ -55,7 +55,6 @@ async function isActivated (id) {
 
 async function checkAdmin (id) {
     const user = await getUserByID(id)
-    console.log(user.role)
     if (user.role !== "ADMIN") {
         return false
     }

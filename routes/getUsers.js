@@ -2,7 +2,7 @@ const { db } = require('../utils/db')
 
 async function getUserByID (id) {
     
-    return db.user.findUnique({
+    return db.user.findFirst({
         where: {
           id
         },
