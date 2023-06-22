@@ -47,8 +47,9 @@ model User {
   username       String       @unique @db.Char(20)
   email          String       @unique
   password       String       
-  listings       Int          @default(0)
-  bids           Int          @default(0)
+  listings       Int          @default(0) 
+  bids           Int          @default(0) 
+  premiumBids    Int          @default(0)
   banned         Boolean      @default(false)
   activated      Boolean      @default(false)
   role           Role         @default(USER)
@@ -81,12 +82,12 @@ model Verification {
   expires     DateTime 
 }
 
-model Offers {
+model Offers { 
   id            String    @id @unique @default(uuid())
   author        String
   User          User      @relation(fields: [author], references: [id], onDelete: Cascade)
-  title         String    @db.Char(100) @unique
-  description   String    @db.VarChar(2000)
+  title         String    @db.Char(100)
+  description   String    @db.VarChar(10000)
   region        Region
   type          OfferType   
   city          String
@@ -97,12 +98,12 @@ model Offers {
   updatedAt     DateTime  @updatedAt
 }
 
-model BoostedOffers {
+model BoostedOffers { 
   id            String    @id @unique @default(uuid())
   author        String
   User          User      @relation(fields: [author], references: [id], onDelete: Cascade)
-  title         String    @db.Char(100) @unique
-  description   String    @db.VarChar(2000)
+  title         String    @db.Char(100) 
+  description   String    @db.VarChar(10000)
   region        Region
   type          OfferType    
   city          String
@@ -116,8 +117,8 @@ model MainBoostedOffers {
   id            String    @id @unique @default(uuid())
   author        String
   User          User      @relation(fields: [author], references: [id], onDelete: Cascade)
-  title         String    @db.Char(100) @unique
-  description   String    @db.VarChar(2000)
+  title         String    @db.Char(100)
+  description   String    @db.VarChar(10000)
   region        Region
   type          OfferType    
   city          String
@@ -126,5 +127,4 @@ model MainBoostedOffers {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 }
-
 
