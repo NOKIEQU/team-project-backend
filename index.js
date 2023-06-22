@@ -29,23 +29,6 @@ app.use('/login', login)
 app.use('/refreshToken', refreshToken)
 app.use('/verifyEmail', verifyEmail)
 
-// app.get('/', async (req, res) => {
-//     res.status(200).json({message: "Successfull!"})
-// })
-
-// app.get('/getusers', async (req, res) => {
-//     try {
-    
-//         const users = await prisma.user.findMany()
-        
-//         res.status(200).json({message: "Successfull", data: users})
-
-//     } catch (err) {
-//         console.log(err)
-//         res.status(500).json({message: "Internal Server Error!"})
-//     }
-// })
-
 app.get('/profile', isAuthenticated, async (req, res) => {
     const userId = req.payload.data.id 
 
