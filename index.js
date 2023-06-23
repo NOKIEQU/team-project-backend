@@ -10,6 +10,8 @@ const register = require('./routes/register')
 const refreshToken = require('./routes/refreshToken')
 const verifyEmail = require('./routes/verifyEmail')
 const createOffer = require('./routes/createOffer')
+const createBoostedOffer = require('./routes/createBoostedOffer')
+const getAllOffers = require('./routes/getAllOffers')
 
 const { isAuthenticated, isAdmin } = require('./utils/middlewares')
 const { getUserByID } = require('./utils/getUsers')
@@ -31,6 +33,9 @@ app.use('/refreshToken', refreshToken)
 app.use('/verifyEmail', verifyEmail)
 
 app.use('/createOffer', isAuthenticated, createOffer)
+app.use('/createBoostedOffer', isAuthenticated, createBoostedOffer)
+app.use('/getAllOffers', getAllOffers)
+
 
 app.get('/profile', isAuthenticated, async (req, res) => {
     const userId = req.payload.data.id 

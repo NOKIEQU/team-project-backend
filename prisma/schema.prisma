@@ -42,6 +42,11 @@ enum OfferType {
   MAGAZYN
 }
 
+enum SellType {
+  RENT
+  BUY
+}
+
 model User {
   id             String       @id @unique @default(uuid())
   username       String       @unique @db.Char(20)
@@ -85,11 +90,13 @@ model Verification {
 model Offers { 
   id            String    @id @unique @default(uuid())
   author        String
+  authorName    String  
   User          User      @relation(fields: [author], references: [id], onDelete: Cascade)
   title         String    @db.Char(100)
   description   String    @db.VarChar(10000)
   region        Region
-  type          OfferType   
+  type          OfferType  
+  sellType      SellType 
   city          String
   isBoosted     Boolean   @default(false)
   properties    Json      
@@ -101,11 +108,13 @@ model Offers {
 model BoostedOffers { 
   id            String    @id @unique @default(uuid())
   author        String
+  authorName    String  
   User          User      @relation(fields: [author], references: [id], onDelete: Cascade)
   title         String    @db.Char(100) 
   description   String    @db.VarChar(10000)
   region        Region
-  type          OfferType    
+  type          OfferType
+  sellType      SellType    
   city          String
   properties    Json      
   expires       DateTime
@@ -116,11 +125,13 @@ model BoostedOffers {
 model MainBoostedOffers {
   id            String    @id @unique @default(uuid())
   author        String
+  authorName    String  
   User          User      @relation(fields: [author], references: [id], onDelete: Cascade)
   title         String    @db.Char(100)
   description   String    @db.VarChar(10000)
   region        Region
-  type          OfferType    
+  type          OfferType
+  sellType      SellType    
   city          String
   properties    Json      
   expires       DateTime

@@ -2,12 +2,18 @@ const { db } = require('./db')
 
 async function getUserByID (id) {
     
-    return db.user.findFirst({
-        where: {
-          id
-        },
-        
-      })
+    try {
+        return db.user.findFirst({
+            where: {
+              id
+            },
+            
+          })
+    } catch (err) {
+        return "User not Found"
+    }
+
+    
 }
 
 async function GetUserByEmail (email) {

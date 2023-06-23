@@ -10,28 +10,17 @@ router.post('/', async (req, res) => {
         res.status(400).json({message: "Data must be provided"})
         return
     }
-    // data: {
-    //     author: data.author,       
-    //     title: data.title,         
-    //     description: data.description,   
-    //     region: data.region,       
-    //     type: data.type,            
-    //     city: data.city,         
-    //     isBoosted: false,    
-    //     properties: data.properties,         
-    //     expires: expiration     
-    // }
-
+   
     try {
 
         
        
-        if (!data.author || !data.title || !data.description || !data.region || !data.type || !data.city || !data.properties) {
+        if (!data.author || !data.authorName || !data.title || !data.description || !data.region || !data.type || !data.sellType || !data.city || !data.properties) {
             res.status(400).json({message: "Missing Values"})
             return
         }
 
-        if (data.author === "" || data.title === "" || data.description === "" || data.region === "" || data.type === "" || data.city === "") {
+        if (data.author === "" || data.authorName === "" || data.title === "" || data.description === "" || data.region === "" || data.type === "" || data.sellType === "" || data.city === "") {
             res.status(400).json({message: "Values cannot be empty"})
             return 
         }
@@ -48,8 +37,17 @@ router.post('/', async (req, res) => {
         // ...
         // Anything else, reject
 
+        const neededKeys = ['bedrooms', 'rooms'];
+
+        const obj = data.properties
+
+
+        if (!neededKeys.every(key => Object.keys(obj).includes(key))) {
+            res.status(400).json({message: "Properties keys are invalid"})
+            return
+        }
+
         if (data.properties.bedrooms === null|| data.properties.rooms === null) {
-            console.log(data.properties.bedrooms, data.properties.rooms)
             res.status(400).json({message: "Missing Properties Values"})
             return
         }
@@ -59,9 +57,10 @@ router.post('/', async (req, res) => {
             return
         }
 
-
             try {
-                const user = await getUserByID(data.author)
+
+                await getUserByID(data.author)
+
             } catch (err) {
                 res.status(400).json({message: "User does not exist"})
             }
@@ -88,6 +87,11 @@ router.post('/', async (req, res) => {
             res.status(400).json({message: "The description is too big"})
             return
         }
+
+        // if (createOffer === "Username does not not exist with this ID") {
+        //     res.status(400).json({message: "Username does not not exist with this ID"})
+        //     return
+        // }
 
         if (createOffer === true) {
             res.status(200).json({message: "Successfull", data: data})
