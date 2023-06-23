@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken")
-const { isBanned, isActivated, checkAdmin } = require('../routes/manageUser');
+const { isBanned, isActivated, checkAdmin } = require('./manageUser');
 
 async function isAuthenticated(req, res, next) {
     const { authorization } = req.headers;
@@ -15,8 +15,6 @@ async function isAuthenticated(req, res, next) {
       req.payload = payload;
 
       const userId = req.payload.data.id 
-      console.log(userId)
-      
       const banned = await isBanned(userId)
 
       if (banned) {

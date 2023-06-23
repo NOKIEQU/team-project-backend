@@ -9,9 +9,10 @@ const login = require('./routes/login')
 const register = require('./routes/register')
 const refreshToken = require('./routes/refreshToken')
 const verifyEmail = require('./routes/verifyEmail')
+const createOffer = require('./routes/createOffer')
 
 const { isAuthenticated, isAdmin } = require('./utils/middlewares')
-const { getUserByID } = require('./routes/getUsers')
+const { getUserByID } = require('./utils/getUsers')
 
 const app = express()
 const port = process.env.SERVER_PORT || 3000
@@ -28,6 +29,8 @@ app.use('/register', register)
 app.use('/login', login)
 app.use('/refreshToken', refreshToken)
 app.use('/verifyEmail', verifyEmail)
+
+app.use('/createOffer', isAuthenticated, createOffer)
 
 app.get('/profile', isAuthenticated, async (req, res) => {
     const userId = req.payload.data.id 
