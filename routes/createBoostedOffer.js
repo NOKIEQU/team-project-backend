@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const { postBoostedOffer } = require('../utils/manageOffers')
+const { postBoostedOffer } = require('../services/manageOffers')
 
 router.post('/', async (req, res) => {
     const { userId, offerId } = req.body

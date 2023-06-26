@@ -3,7 +3,7 @@ const express = require('express')
 const {v4: uuidv4} = require('uuid')
 const { generateTokens } = require("../utils/jwt")
 const { addRefreshTokenToWhitelist } = require('../utils/auth')
-const { GetUserByEmail } = require('../utils/getUsers')
+const { GetUserByEmail } = require('../services/getUsers')
 const bcrypt = require('bcrypt')
 const router = express.Router()
 

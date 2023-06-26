@@ -1,5 +1,5 @@
 const bcrypt = require('bcrypt')
-const { db } = require('./db')
+const { db } = require('../utils/db')
 
 function createUser(user) {
     user.password = bcrypt.hashSync(user.password, 12)

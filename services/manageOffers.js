@@ -1,13 +1,14 @@
-const { db } = require('./db')
+const { db } = require('../utils/db')
 const { getUserByID } = require('./getUsers')
-const { addDays } = require('./addDays')
+const { addDays } = require('../utils/addDays')
 const { Prisma } = require('@prisma/client')
 const { createPaginator } = require('prisma-pagination') 
+const { createDirectory, createFile } = require('../utils/fileSystem')
 
 async function getOffers (page, perPage) {
     // get 20 offers and give a pagination
     // Sort it by the newest ones
-    // delete expiration from each one of them or select everything but expiration
+    // delete expiration from each one of them
 
     try {
         const paginate = createPaginator({page: page, perPage: perPage})
@@ -36,9 +37,37 @@ async function getOffers (page, perPage) {
         return "Server Error"
     }
 }
+// TU KURWA
+async function getUserOffers (page, perPage, userId) {
+    try {
+        const paginate = createPaginator({page: page, perPage: perPage})
+        return await paginate(
+            db.offers,
+            {
+                where: userId
+            },
+            {
+                select: {
+                    id: true,
+                    author: true,
+                    title: true,
+                    description: true,
+                    region: true,
+                    type: true,
+                    city: true,
+                    isBoosted: true,
+                    properties: true,
+                    expires: false,
+                    createdAt: true,
+                    updatedAt: true,
+                }
+            }
+        )
 
-async function getUserOffers () {
-    
+    } catch (err) {
+        console.log(err)
+        return "Server Error"
+    }
 }
 
 async function getOfferByID (offerID) {
@@ -59,16 +88,18 @@ async function getOfferByID (offerID) {
 }
 
 async function postOffer (data) {
-    // check if the user can post the offer aka. check for listings
+    // check if the user can post the offer aka. check for listings - done
     // decrease listings -1
-    // Post the images into s3
-    // Make sure the image pointers are ready to put into the database
+    // save the images 
     // post the offer
+    // Make sure the image pointers are in the database
+
     try {
 
         const user = await getUserByID(data.author)
         const date = new Date()
         const expiration = addDays(date, 30)
+        const imagesArray = data.properties.images
 
         if (user === "User not Found") {
             return user
@@ -78,26 +109,77 @@ async function postOffer (data) {
             return false
         }
 
-        // try {
-        //     // There is probably better way of doing this but for now i'll leave it like this
-        //     await db.user.findUnique({
-        //         where: {
-        //             username: data.authorName
-        //         }
-        //     })
+       /*
+       properties: {
+        bedrooms: 4,
+        rooms: 4,
+        images: [
+            "base64", 
+            "base64", 
+            "base64"
+        ]
+       }
+       */
 
-        // } catch (err) {
-        //     console.error(err)
-        //     return "Username does not not exist with this ID"
-        // }
+       async function appendImages (userId, offerId, base64Array) {
+
+            const directory = `${userId}/${offerId}`
+
+            try {
+
+                await createDirectory(directory)
+
+                const base64ImageArrayLength = base64Array.length
+
+                for (let i = 0; i < base64ImageArrayLength; i++) {
+                    const data = base64Array[i]
+
+                    // use Sharp module to check if the image is in right format and size (format: jpg, size: 600x400) reject if not
+                    // const buffer = Buffer.from(data, "base64"); // Dont need to do that since createFile() will transform it to an image anyway
+                    
+                    await createFile(data, i, directory)
+                }
+
+                const newImageArray = []
+                
+
+                for (let i = 0; i < base64ImageArrayLength; i++) {
+                    newImageArray.push(`${process.env.APP_MEDIA_URL}/${userId}/${offerId}/${i}.jpg`)
+                }
+
+                const newProperties = data.properties 
+                newProperties.images = newImageArray
+
+                await db.offers.update({
+                    where: {
+                        id: offerId
+                    },
+                    data: {
+                        properties: newProperties
+                                  
+                    }
+                })
+
+            } catch (err) {
+                console.error(err)
+                return
+            }
+
+
+            // Update the record with the url to the images
+       }
+
 
         try {
-            await db.offers.create({
+
+            delete data.properties.images
+             var finalOffer = await db.offers.create({
                 data: {
                     author: data.author,   
                     authorName: data.authorName,    
                     title: data.title,         
-                    description: data.description,   
+                    description: data.description,  
+                    price: data.price, 
                     region: data.region,       
                     type: data.type, 
                     sellType: data.sellType,           
@@ -107,6 +189,8 @@ async function postOffer (data) {
                     expires: expiration     
                 }
             })
+
+
         } catch (err) {
             if (err instanceof Prisma.PrismaClientKnownRequestError) {
                 if (err.code === 'P2000') {
@@ -124,6 +208,9 @@ async function postOffer (data) {
                 listings: user.listings - 1
             }
         })
+        
+
+        await appendImages(data.author, finalOffer.id, imagesArray)
 
         return true
 
@@ -228,7 +315,8 @@ async function postBoostedMainOffer (userId, offerId) {
 module.exports = {
     getOffers,
     getOfferByID,
+    getUserOffers,
     postOffer,
     postBoostedOffer,
-    postBoostedMainOffer
+    postBoostedMainOffer,
 }

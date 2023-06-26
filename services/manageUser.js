@@ -1,4 +1,4 @@
-const { db } = require('./db')
+const { db } = require('../utils/db')
 const { getUserByID } = require('./getUsers')
 
 async function activateUser (id) {

@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken")
-const { isBanned, isActivated, checkAdmin } = require('./manageUser');
+const { isBanned, isActivated, checkAdmin } = require('../services/manageUser');
 
 async function isAuthenticated(req, res, next) {
     const { authorization } = req.headers;
