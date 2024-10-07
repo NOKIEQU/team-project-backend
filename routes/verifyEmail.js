@@ -19,7 +19,7 @@ router.get('/', async (req, res) => {
             return
         }
 
-        // Since is valid we can delete the code
+     
 
         res.status(200).json({message: "Email verified successfully"})
 

@@ -11,11 +11,8 @@ const refreshToken = require('./routes/refreshToken')
 const verifyEmail = require('./routes/verifyEmail')
 
 const createOffer = require('./routes/createOffer')
-const createBoostedOffer = require('./routes/createBoostedOffer')
-const createBoostedMainOffer = require('./routes/createBoostedMainOffer')
 
 const getAllOffers = require('./routes/getAllOffers')
-const getUserOffers = require('./routes/getUsersOffer')
 const getOfferByID = require('./routes/getOfferByID')
 
 const { isAuthenticated, isAdmin } = require('./utils/middlewares')
@@ -40,17 +37,11 @@ app.use('/verifyEmail', verifyEmail)
 
 // Cteate new offer on the website
 app.use('/createOffer', isAuthenticated, createOffer)
-app.use('/createBoostedOffer', isAuthenticated, createBoostedOffer)
-app.use('./createBoostedMainOffer', isAuthenticated, createBoostedMainOffer)
 
 // Get the specific offers
 // We do not need any authorisation for this as we want the users to get them on page load
 app.use('/getAllOffers', getAllOffers)
 
-// NEED TESTING
-
-// This return offers that are not containing any user private information so we dont need any authorisation for that
-app.use('/getUserOffers', getUserOffers)
 
 app.use('/getOffer', getOfferByID)
 
