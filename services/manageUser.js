@@ -12,6 +12,17 @@ async function activateUser (id) {
     })
 }
 
+async function changePassword (id, newPassword) {
+    db.user.update({
+        where: {
+            id
+        },
+        data: {
+            password: newPassword
+        }
+    })
+}
+
 async function banUser (id) {
     db.user.update({
         where: {
@@ -62,11 +73,32 @@ async function checkAdmin (id) {
     return true
 }   
 
+async function editUser (id, data) {
+    const user = await getUserByID(id)
+
+    if (!user) {
+        return "User not found"
+    }
+
+    db.user.update({
+        where: {
+            id
+        },
+        data: {
+            username: data.username,
+            email: data.email,
+
+        }
+    })
+}
+
 module.exports = { 
     activateUser,
+    changePassword,
     banUser,
     unbanUser,
     isBanned,
     isActivated,
-    checkAdmin
+    checkAdmin,
+    editUser
 }

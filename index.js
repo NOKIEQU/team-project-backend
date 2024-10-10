@@ -1,19 +1,24 @@
-const { PrismaClient } = require('@prisma/client')
-const prisma = new PrismaClient()
 const express = require('express')
 const bodyParser = require('body-parser')
 const { db } = require('./utils/db')
-const jwt = require("jsonwebtoken")
 
-const login = require('./routes/login')
-const register = require('./routes/register')
-const refreshToken = require('./routes/refreshToken')
-const verifyEmail = require('./routes/verifyEmail')
+const login = require('./routes/users/login')
+const register = require('./routes/users/register')
+const refreshToken = require('./routes/users/refreshToken')
+const verifyEmail = require('./routes/users/verifyEmail')
+const changePassword = require('./routes/users/changePassword')
+const editUser = require('./routes/users/editUser')
 
-const createOffer = require('./routes/createOffer')
+const createOffer = require('./routes/offers/createOffer')
 
-const getAllOffers = require('./routes/getAllOffers')
-const getOfferByID = require('./routes/getOfferByID')
+const getAllOffers = require('./routes/offers/getAllOffers')
+const getOfferByID = require('./routes/offers/getOfferByID')
+
+const getAllCategories = require('./routes/categories/getAllCategories')
+const createCategory = require('./routes/categories/createCategory')
+const deleteCategory = require('./routes/categories/deleteCategory')
+const editCategory = require('./routes/categories/editCategory')
+
 
 const { isAuthenticated, isAdmin } = require('./utils/middlewares')
 const { getUserByID } = require('./services/getUsers')
@@ -34,16 +39,19 @@ app.use('/register', register)
 app.use('/login', login)
 app.use('/refreshToken', refreshToken)
 app.use('/verifyEmail', verifyEmail)
+app.use('/editUser', isAuthenticated, editUser)
+// Change Password
+app.use('/changePassword', isAuthenticated, changePassword)
 
-// Cteate new offer on the website
-app.use('/createOffer', isAuthenticated, createOffer)
-
-// Get the specific offers
-// We do not need any authorisation for this as we want the users to get them on page load
+app.use('/createOffer', isAdmin, createOffer)
 app.use('/getAllOffers', getAllOffers)
-
-
 app.use('/getOffer', getOfferByID)
+
+
+app.use('/getAllCategories', getAllCategories)
+app.use('/createCategory', isAdmin, createCategory)
+app.use('/deleteCategory', isAdmin, deleteCategory)
+app.use('/editCategory', isAdmin, editCategory)
 
 app.get('/profile', isAuthenticated, async (req, res) => {
     const userId = req.payload.data.id 

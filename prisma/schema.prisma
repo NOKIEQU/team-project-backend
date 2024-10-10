@@ -23,6 +23,7 @@ model User {
   role           Role         @default(USER)
   refreshTokens  RefreshToken[]
   verification   Verification[]
+  reviews        Reviews[]
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
 }
@@ -47,15 +48,37 @@ model Verification {
   expires     DateTime 
 }
 
-// Add Phone Number
-// 
-
 model Offers { 
   id            String    @id @unique @default(uuid())
   title         String    @db.Char(100)
   description   String    @db.VarChar(10000)
-  price         Int
+  price         Float
+  image         String
+  category      Categories  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  categoryId    String
+  rating        Float @default(0)
+  reviews       Reviews[]
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 }
 
+model Categories {
+  id          String    @id @unique @default(uuid())
+  name        String    @unique
+  description String
+  offers     Offers[]  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Reviews {
+  id          String    @id @unique @default(uuid())
+  rating      Float
+  comment     String
+  userId      String
+  User        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  offerId     String
+  Offer       Offers    @relation(fields: [offerId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}

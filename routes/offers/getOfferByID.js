@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const { getOfferByID } = require('../services/manageOffers')
+const { getOfferByID } = require('../../services/manageOffers')
 
 router.get('/', async (req, res) => {
     const { page, offerID } = req.query

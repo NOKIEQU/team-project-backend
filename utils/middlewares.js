@@ -56,7 +56,7 @@ async function isAuthenticated(req, res, next) {
       req.payload = payload;
 
       const userId = req.payload.data.id 
-      console.log(userId)
+      // console.log(userId)
       const admin = await checkAdmin(userId)
 
       if (!admin) {

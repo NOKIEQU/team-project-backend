@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const { verifyEmailCode } = require('../utils/mail')
+const { verifyEmailCode } = require('../../utils/mail')
 
 
 router.get('/', async (req, res) => {

@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const { getOffers } = require('../services/manageOffers')
+const { getOffers } = require('../../services/manageOffers')
 
 router.get('/', async (req, res) => {
     const { page } = req.query

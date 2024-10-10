@@ -1,22 +1,25 @@
 const { db } = require('../utils/db')
 const { Prisma } = require('@prisma/client')
-const { createPaginator } = require('prisma-pagination') 
-
-async function getOffers (page, perPage) {
+const { createPaginator } = require('prisma-pagination')
+async function getOffers(page, perPage) {
     // get 20 offers and give a pagination
     // Sort it by the newest ones
     // delete expiration from each one of them
 
     try {
-        const paginate = createPaginator({page: page, perPage: perPage})
+        const paginate = createPaginator({ page: page, perPage: perPage })
         return await paginate(
             db.offers,
             {
                 select: {
                     id: true,
-                    author: true,
                     title: true,
                     description: true,
+                    price: true,
+                    image: true,
+                    categoryId: true,
+                    reviews: true,
+                    rating: true,
                 }
             }
         )
@@ -27,7 +30,7 @@ async function getOffers (page, perPage) {
     }
 }
 
-async function getOfferByID (offerID) {
+async function getOfferByID(offerID) {
 
     try {
 
@@ -38,39 +41,26 @@ async function getOfferByID (offerID) {
         })
 
     } catch (err) {
-        return "Offer not found"   
+        return "Offer not found"
     }
 
-  
+
 }
 
-async function postOffer (data) {
-    
-
+async function postOffer(data) {
     try {
+        const finalOffer = await db.offers.create({
+            data: {
 
-        try {
-
-             var finalOffer = await db.offers.create({
-                data: {
-                    author: data.author,   
-                    title: data.title,         
-                    description: data.description,  
-                    price: data.price, 
-                }
-            })
-
-
-        } catch (err) {
-            if (err instanceof Prisma.PrismaClientKnownRequestError) {
-                if (err.code === 'P2000') {
-                    return err
-                }
-                return "Server Error"
+                title: data.title,
+                description: data.description,
+                price: data.price,
+                categoryId: data.category_id,
+                image: data.image,
             }
-        }
+        })
 
-        return true
+        return finalOffer
 
     } catch (err) {
         console.error(err)
@@ -79,9 +69,52 @@ async function postOffer (data) {
 
 }
 
+async function editOffer(offerID, data) {
+    try {
+        const finalOffer = await db.offers.update({
+            where: {
+                id: offerID
+            },
+            data: {
+                title: data.title,
+                description: data.description,
+                price: data.price,
+                categoryId: data.category_id,
+                image: data.image,
+            }
+        })
+
+        return finalOffer
+
+    } catch (err) {
+        console.error(err)
+        return "Server Error"
+    }
+
+}
+
+async function deleteOffer(offerID) {
+    try {
+        
+        const deletedOffer = await db.offers.delete({
+            where: {
+                id: offerID
+            }
+        })
+
+        return deletedOffer
+
+    } catch (err) {
+        console.error(err)
+        return "Server Error"
+    }
+
+}
 
 module.exports = {
     getOffers,
     getOfferByID,
-    postOffer
+    postOffer,
+    editOffer,
+    deleteOffer
 }

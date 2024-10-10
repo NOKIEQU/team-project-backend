@@ -1,9 +1,9 @@
 const express = require('express')
 const {v4: uuidv4} = require('uuid')
-const { generateTokens } = require("../utils/jwt")
-const { addRefreshTokenToWhitelist, deleteRefreshToken, findRefreshTokenById } = require('../utils/auth')
-const { getUserByID } = require('../services/getUsers')
-const { hashToken } = require('../utils/hash')
+const { generateTokens } = require("../../utils/jwt")
+const { addRefreshTokenToWhitelist, deleteRefreshToken, findRefreshTokenById } = require('../../utils/auth')
+const { getUserByID } = require('../../services/getUsers')
+const { hashToken } = require('../../utils/hash')
 const router = express.Router()
 
 router.post('/', async (req, res, next) => {
