@@ -100,5 +100,5 @@ module.exports = {
     isBanned,
     isActivated,
     checkAdmin,
-    editUser
+    editUser 
 }

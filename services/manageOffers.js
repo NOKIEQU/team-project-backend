@@ -1,5 +1,4 @@
 const { db } = require('../utils/db')
-const { Prisma } = require('@prisma/client')
 const { createPaginator } = require('prisma-pagination')
 async function getOffers(page, perPage) {
     // get 20 offers and give a pagination
